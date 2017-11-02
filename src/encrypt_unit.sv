@@ -30,8 +30,8 @@ module encrypt_unit (
    
    logic [7:0] 				din_ff;
    logic [7:0] 				dout_int;   
-   wire [7:0] 				scrambled_din;
-   logic [7:0] 				curr_key;
+   wire [7:0] 				scrambled_in;
+   logic [23:0] 				curr_key;
    
 `ifndef CONFIG_EN   
    logic [23:0] 			curr_key_rot ;
@@ -51,7 +51,7 @@ module encrypt_unit (
   always_ff @(posedge clk , negedge rst) begin : seq_logic
      if(rst == 1'b0) begin
        din_ff <= '0;
-        dout_int <= '0;
+        dout <= '0;
         v <= 1'b0;
 `ifndef CONFIG_EN
 	curr_key <= {`XOR_KEY1 , `XOR_KEY2 , `XOR_KEY3};		
@@ -61,7 +61,8 @@ module encrypt_unit (
        din_ff <= din;
 	v <= 1'b1;
 	dout <= dout_int;
-	curr_key <= curr_key_rot;	
+	curr_key <= curr_key_rot;
+        //curr_key_ff <= curr_key_rot;	
      end
      else begin
 	dout <= '0;
@@ -70,17 +71,17 @@ module encrypt_unit (
   end // block: seq_logic
 
    always_comb begin: xor_stage
-     dout_int = scrambled_in ^ curr_key;
+     dout_int = scrambled_in ^ curr_key[7:0];
    end
    
 `ifndef CONFIG_EN
    //Rotate key every clock cycle 8 bits if cycle frequency is set to 1
    always_comb begin : auto_shifter
-      curr_key_rot = {curr_key[8:15] , curr_key[7:0] , curr_key[16:23]};
+      curr_key_rot = {curr_key[15:8] , curr_key[7:0] , curr_key[23:16]};
    end
 `endif
 
-endmodule; // encrypt_unit
+endmodule// encrypt_unit
 
    
       

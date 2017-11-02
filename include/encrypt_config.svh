@@ -25,9 +25,9 @@ package encrypt_config;
 `define PERM_6 1
 `define PERM_7 0
 
-`XOR_KEY1 8'hDE
-`XOR_KEY2 8'hAD
-`XOR_KEY3 8'hBE
+`define XOR_KEY1 8'hDE
+`define XOR_KEY2 8'hAD
+`define XOR_KEY3 8'hBE
 
 endpackage // encrypt_config
    
