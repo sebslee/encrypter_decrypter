@@ -58,14 +58,12 @@ module encrypt_unit (
 `endif	
      end     
      else if( en == 1'b1) begin
-       din_ff <= din;
+        din_ff <= din;
 	v <= 1'b1;
 	dout <= dout_int;
-	curr_key <= curr_key_rot;
-        //curr_key_ff <= curr_key_rot;	
+	curr_key <= curr_key_rot;	
      end
      else begin
-	dout <= '0;
 	v <= 1'b0;	
 	end     
   end // block: seq_logic

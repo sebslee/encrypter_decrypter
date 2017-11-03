@@ -29,6 +29,8 @@ package encrypt_config;
 `define XOR_KEY2 8'hAD
 `define XOR_KEY3 8'hBE
 
+`define CLK_PERIOD 5   
+
 endpackage // encrypt_config
    
    
