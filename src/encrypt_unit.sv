@@ -28,6 +28,7 @@ module encrypt_unit (
 		     output logic [7:0] dout,
 		     output logic 	v);
    
+   logic                                v_ff;
    logic [7:0] 				din_ff;
    logic [7:0] 				dout_int;   
    wire [7:0] 				scrambled_in;
@@ -52,26 +53,26 @@ module encrypt_unit (
      if(rst == 1'b0) begin
        din_ff <= '0;
         dout <= '0;
-        v <= 1'b0;
+        v_ff <= 1'b0;
 `ifndef CONFIG_EN
-	curr_key <= {`XOR_KEY1 , `XOR_KEY2 , `XOR_KEY3};		
+	curr_key <= {`XOR_KEY2 , `XOR_KEY3 , `XOR_KEY1};		
 `endif	
      end     
      else if( en == 1'b1) begin
        din_ff <= din;
-	v <= 1'b1;
-	dout <= dout_int;
+        v_ff <= 1'b1;
 	curr_key <= curr_key_rot;
-        //curr_key_ff <= curr_key_rot;	
      end
      else begin
-	dout <= '0;
-	v <= 1'b0;	
+//	dout <= '0; save logic, if valid not asserted data shouldnt matter...
+	v_ff <= 1'b0;	
 	end     
+        v <= v_ff;
+	dout <= dout_int;
   end // block: seq_logic
 
    always_comb begin: xor_stage
-     dout_int = scrambled_in ^ curr_key[7:0];
+     dout_int = scrambled_in ^ curr_key[15:8];
    end
    
 `ifndef CONFIG_EN
