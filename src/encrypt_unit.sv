@@ -63,7 +63,7 @@ module encrypt_unit (
 `endif	
      end     
      else begin if( en == 1'b1) begin
-       din_ff <= din;
+        din_ff <= din;
         v_ff <= 1'b1;
 	curr_key <= curr_key_rot;
      end
