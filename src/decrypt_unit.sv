@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////////////////////////
-// Design unit: encrypt_unit
+// Design unit: decrypt_unit
 //            :
-// File name  : encrypt_unit.sv
+// File name  : decrypt_unit.sv
 //            :
-// Description: Top module for encryption
-//            :
+// Description: Top module for decryption. Module is completely simetric to encryption 
+//            : unit in high performance mode (permutation order reversed, xor operation symetric)
 // Limitations: None
 //            : 
 // System     : SystemVerilog IEEE 1800-2005
@@ -12,12 +12,12 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
-`ifndef ENCRYPT_UNIT
-`define ENCRYPT_UNIT
+`ifndef DECRYPT_UNIT
+`define DECRYPT_UNIT
 `include "../include/encrypt_config.svh"
 import encrypt_config::*;
 
-module encrypt_unit (
+module decrypt_unit (
 		     input logic 	clk,
 		     input logic 	rst,
 		     input logic [7:0] 	din,
@@ -33,22 +33,22 @@ module encrypt_unit (
    logic                                v_ff;
    logic [7:0] 				din_ff;
    logic [7:0] 				dout_int;   
-   wire [7:0] 				scrambled_in;
-   logic [23:0] 				curr_key;
+   logic [7:0] 				scrambled_out;
+   logic [23:0] 		        curr_key;
    
 `ifndef CONFIG_EN   
    logic [23:0] 			curr_key_rot ;
 `endif
    	   
 `ifndef CONFIG_EN
-   assign scrambled_in[0] = din_ff [`PERM_0];
-   assign scrambled_in[1] = din_ff [`PERM_1];
-   assign scrambled_in[2] = din_ff [`PERM_2];
-   assign scrambled_in[3] = din_ff [`PERM_3];
-   assign scrambled_in[4] = din_ff [`PERM_4];
-   assign scrambled_in[5] = din_ff [`PERM_5];
-   assign scrambled_in[6] = din_ff [`PERM_6];
-   assign scrambled_in[7] = din_ff [`PERM_7];   
+   assign dout_int[`PERM_0] = scrambled_out [0];
+   assign dout_int[`PERM_1] = scrambled_out [1];
+   assign dout_int[`PERM_2] = scrambled_out [2];
+   assign dout_int[`PERM_3] = scrambled_out [3];
+   assign dout_int[`PERM_4] = scrambled_out  [4];
+   assign dout_int[`PERM_5] = scrambled_out  [5];
+   assign dout_int[`PERM_6] = scrambled_out  [6];
+   assign dout_int[`PERM_7] = scrambled_out  [7];   
 `endif
 
   always_ff @(posedge clk , negedge rst) begin : seq_logic
@@ -57,12 +57,11 @@ module encrypt_unit (
         dout <= '0;
         v_ff <= 1'b0;
         v <= 1'b0;
-        //dout_int <= '0;        
 `ifndef CONFIG_EN
 	curr_key <= {`XOR_KEY2 , `XOR_KEY3 , `XOR_KEY1};		
 `endif	
      end     
-     else begin if( en == 1'b1) begin
+     else begin  if( en == 1'b1) begin
        din_ff <= din;
         v_ff <= 1'b1;
 	curr_key <= curr_key_rot;
@@ -73,11 +72,11 @@ module encrypt_unit (
 	end     
         v <= v_ff;
 	dout <= dout_int;
-      end
+     end
   end // block: seq_logic
 
    always_comb begin: xor_stage
-     dout_int = scrambled_in ^ curr_key[15:8];
+     scrambled_out = din_ff ^ curr_key[15:8];
    end
    
 `ifndef CONFIG_EN
@@ -89,23 +88,3 @@ module encrypt_unit (
 
 endmodule// encrypt_unit
 `endif
-   
-      
-
-   
-
-
-
-  
-
-   
-   
-   
-   
-     
-   
-   
-		     
-		     
-
-
