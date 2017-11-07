@@ -77,10 +77,10 @@ module encrypt_pipe_shift_dc (
       if(mode == 1'b1 && en == 1'b1 ) begin
 	 if(shift_en == 1'b1) begin
 	 //Compare incoming data with boundaries of ascii alphabetic characters ...
-	 if(din > 65 && din < 90)begin
+	 if(din > 64 && din < 91)begin
 	    is_alpha_upper_case = 1'b1;	    
 	 end
-	 else(din > 97 && din < 122) begin
+	 else if (din > 96 && din < 123) begin
 	    is_alpha_low_case = 1'b1;
 	 end
 	 extended_shift_data[31:25] = '0;	 
@@ -139,11 +139,13 @@ module encrypt_pipe_shift_dc (
            120: extended_shift_data[24:0] = 25'b1 << 23;
            121: extended_shift_data[24:0] = 25'b1 << 24;
            122: extended_shift_data[24:0] = 25'b1 << 25;	   
-	   default :  extended_shift_data [24:0] = {12{0} , din};  
+	   default :  extended_shift_data [24:0] = { {12{1'b0}} , din};  
 	 endcase // case (din)
 	 end // if (shift_en == 1'b1)
+         else begin
 	 extended_shift_data [31:8] = '0;
-	 extended_shift_data [7:0] = din;	 
+	 extended_shift_data [7:0] = din;	
+         end 
       end // if (mode == 1'b1 )
    end // block: shift_data_compare
    
