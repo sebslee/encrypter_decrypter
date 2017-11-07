@@ -1,9 +1,10 @@
 /////////////////////////////////////////////////////////////////////
-// Design unit: encrypt_unit
+// Design unit: ecnrypt_pipe_shift_dc
 //            :
-// File name  : encrypt_unit.sv
+// File name  : encrypt_pipe_shift_dc.sv
 //            :
-// Description: Top module for encryption
+// Description: Data compare stage. Signal generated if incoming data is alpha (upp and low case).
+// A stream of 25 bits is generated, facilitating rotation in the next stage. 
 //            :
 // Limitations: None
 //            : 
@@ -12,89 +13,68 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
-`ifndef ENCRYPT_UNIT
-`define ENCRYPT_UNIT
-`include "../include/encrypt_config.svh"
-import encrypt_config::*;
 
-module encrypt_unit (
-		     input logic 	clk,
-		     input logic 	rst,
-		     input logic [7:0] 	din,
-		     input logic 	en,
-`ifndef HP_MODE
-		     input logic [7:0] 	k1 , k2 , k3,
-		     input logic [2:0] 	rot_freq,
-		     input logic 	shift_en,
-		     input logic [2:0] 	shift_amt,
-		     input logic mode,		     
-`endif
-		     
-		     output logic [7:0] dout,
-		     output logic 	v);
-`ifdef HP_MODE
-   
-   logic                                v_ff;
-   logic [7:0] 				din_ff;
-   logic [7:0] 				dout_int;   
-   wire [7:0] 				scrambled_in;
-   logic [23:0] 			curr_key;      
-   logic [23:0] 			curr_key_rot ;
+module encrypt_pipe_shift_dc (
+			      input logic 	  clk,
+			      input logic 	  rst,
+			      input logic 	  en,
+			      input logic [7:0]   din,
+			      input logic [7:0]   k1 , k2 , k3,
+			      input logic [2:0]   rot_freq,
+			      input logic 	  shift_en,
+			      input logic 	  shift_amt,
+			      input logic 	  mode,
+			      //PIPE OUTPUTS
+			      //output logic [7:0]  din_out,
+			      output logic [7:0]  k1_out , k2_out , k3_out,
+			      output logic [2:0]  rot_freq_out,
+			      output logic 	  shift_en_out,
+			      output logic 	  shift_amt_out,
+			      output logic 	  mode_out,
+			      output logic        en_out,
+			      output logic 	  is_alpha_upper_case_out , is_alpha_low_case_out,
+			      output logic [31:0] extended_shift_data_out);
 
-   	   
-   assign scrambled_in[0] = din_ff [`PERM_0];
-   assign scrambled_in[1] = din_ff [`PERM_1];
-   assign scrambled_in[2] = din_ff [`PERM_2];
-   assign scrambled_in[3] = din_ff [`PERM_3];
-   assign scrambled_in[4] = din_ff [`PERM_4];
-   assign scrambled_in[5] = din_ff [`PERM_5];
-   assign scrambled_in[6] = din_ff [`PERM_6];
-   assign scrambled_in[7] = din_ff [`PERM_7];   
-
-
-  always_ff @(posedge clk , negedge rst) begin : seq_logic
-     if(rst == 1'b0) begin
-       din_ff <= '0;
-        dout <= '0;
-        v_ff <= 1'b0;
-        v <= 1'b0;
-        //dout_int <= '0;        
-
-	curr_key <= {`XOR_KEY2 , `XOR_KEY3 , `XOR_KEY1};		
-	
-     end     
-     else begin if( en == 1'b1) begin
-        din_ff <= din;
-        v_ff <= 1'b1;
-	curr_key <= curr_key_rot;
-     end
-     else begin
-//	dout <= '0; save logic, if valid not asserted data shouldnt matter...
-	v_ff <= 1'b0;	
-	end     
-        v <= v_ff;
-	dout <= dout_int;
-      end
-  end // block: seq_logic
-
-   always_comb begin: xor_stage
-
-   
-   //Rotate key every clock cycle 8 bits if cycle frequency is set to 1
-   always_comb begin : auto_shifter
-      curr_key_rot = {curr_key[15:8] , curr_key[7:0] , curr_key[23:16]};
-   end
-`else // !`ifdef HP_MODE // CODE FOR CONFIGURABLE MODE STARTS HERE
    logic [31:0] extended_shift_data; //for 1 clock cycle rotation
    logic 	is_alpha_upper_case , is_alpha_low_case;
-   
+
+   // flop data out ...
+   always_ff @ (posedge clk, negedge rst) begin : seq_logic
+      if(rst == 1'b0) begin
+	 //din_out <= '0;
+	 k1_out <= '0;
+	 k2_out <= '0;	
+	 k3_out <= '0;
+	 rot_freq_out <='0;
+	 shift_en_out <='0;
+	 shift_amt_out <= '0;
+	 mode_out <= '0;
+	 en_out <= '0;
+	 is_alpha_upper_case_out <= '0;
+	 is_alpha_low_case_out <= '0;
+	 extended_shift_data_out <= '0;
+      end // if (rst == 1'b0)      
+      else begin	
+	 k1_out <= k1;
+	 k2_out <= k2;	
+	 k3_out <= k3;
+	 rot_freq_out <= rot_freq;
+	 shift_en_out <= shift_en;
+	 shift_amt_out <= shift_amt;
+	 mode_out <= mode;
+	 en_out <= en;
+	 is_alpha_upper_case_out <= is_alpha_upper_case;
+	 is_alpha_low_case_out <= is_alpha_low_case;
+	 extended_shift_data_out <= extended_shift_data;
+      end // else: !if(rst == 1'b0)
+   end // block: seq_logic   		 	 
 
    always_comb begin : shift_data_compare // 1st pipe stage
       //defaults to avoid latches ..
       is_alpha_upper_case = 1'b0;
       is_alpha_low_case = 1'b0;
       extended_shift_data = '0;      
-      if(mode == 1'b1 ) begin
+      if(mode == 1'b1 && en == 1'b1 ) begin
 	 if(shift_en == 1'b1) begin
 	 //Compare incoming data with boundaries of ascii alphabetic characters ...
 	 if(din > 65 && din < 90)begin
@@ -164,34 +144,10 @@ module encrypt_unit (
 	 end // if (shift_en == 1'b1)
 	 extended_shift_data [31:8] = '0;
 	 extended_shift_data [7:0] = din;	 
-      end // if (mode == 1'b1 )      
-      end 
-      
-   end
+      end // if (mode == 1'b1 )
+   end // block: shift_data_compare
    
-   
-`endif // !`ifdef HP_MODE
-   
+endmodule // encrypt_pipe_shift_dc
 
-endmodule// encrypt_unit
-`endif
-   
-      
-
-   
-
-
-
-  
-
-   
-   
-   
-   
-     
-   
-   
-		     
-		     
-
-
+	      
+			      

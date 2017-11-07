@@ -22,25 +22,26 @@ module decrypt_unit (
 		     input logic 	rst,
 		     input logic [7:0] 	din,
 		     input logic 	en,
-`ifdef CONFIG_EN
+`ifndef HP_MODE
 		     input logic [7:0] 	k1 , k2 , k3,
 		     input logic [2:0] 	rot_freq,
+		     input logic 	shift_en,
+		     input logic [2:0] 	shift_amt,
+		     input logic mode,
 `endif
 		     
 		     output logic [7:0] dout,
 		     output logic 	v);
-   
+`ifdef HP_MODE
    logic                                v_ff;
    logic [7:0] 				din_ff;
    logic [7:0] 				dout_int;   
    logic [7:0] 				scrambled_out;
-   logic [23:0] 		        curr_key;
-   
-`ifndef CONFIG_EN   
+   logic [23:0] 		        curr_key;      
    logic [23:0] 			curr_key_rot ;
-`endif
+
    	   
-`ifndef CONFIG_EN
+
    assign dout_int[`PERM_0] = scrambled_out [0];
    assign dout_int[`PERM_1] = scrambled_out [1];
    assign dout_int[`PERM_2] = scrambled_out [2];
@@ -49,7 +50,7 @@ module decrypt_unit (
    assign dout_int[`PERM_5] = scrambled_out  [5];
    assign dout_int[`PERM_6] = scrambled_out  [6];
    assign dout_int[`PERM_7] = scrambled_out  [7];   
-`endif
+
 
   always_ff @(posedge clk , negedge rst) begin : seq_logic
      if(rst == 1'b0) begin
@@ -57,9 +58,9 @@ module decrypt_unit (
         dout <= '0;
         v_ff <= 1'b0;
         v <= 1'b0;
-`ifndef CONFIG_EN
+
 	curr_key <= {`XOR_KEY2 , `XOR_KEY3 , `XOR_KEY1};		
-`endif	
+
      end     
      else begin  if( en == 1'b1) begin
        din_ff <= din;
@@ -79,12 +80,17 @@ module decrypt_unit (
      scrambled_out = din_ff ^ curr_key[15:8];
    end
    
-`ifndef CONFIG_EN
    //Rotate key every clock cycle 8 bits if cycle frequency is set to 1
    always_comb begin : auto_shifter
       curr_key_rot = {curr_key[15:8] , curr_key[7:0] , curr_key[23:16]};
    end
-`endif
 
+`else // CODE FOR CONFIGURABLE MODE STARTS HERE
+
+   
+   
+`endif // !`ifdef HP_MODE
+        
 endmodule// encrypt_unit
-`endif
+`endif //  `ifndef DECRYPT_UNIT
+
