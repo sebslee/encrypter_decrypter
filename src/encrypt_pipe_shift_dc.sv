@@ -25,12 +25,6 @@ module encrypt_pipe_shift_dc (
 			      input logic [3:0]	  shift_amt,
 			      input logic 	  mode,
 			      //PIPE OUTPUTS
-			      //output logic [7:0]  din_out,
-			      output logic [7:0]  k1_out , k2_out , k3_out,
-			      output logic [2:0]  rot_freq_out,
-			      output logic 	  shift_en_out,
-			      output logic [3:0]	  shift_amt_out,
-			      output logic 	  mode_out,
 			      output logic        en_out,
 			      output logic 	  is_alpha_upper_case_out , is_alpha_low_case_out,
 			      output logic [31:0] extended_shift_data_out);
@@ -41,27 +35,12 @@ module encrypt_pipe_shift_dc (
    // flop data out ...
    always_ff @ (posedge clk, negedge rst) begin : seq_logic
       if(rst == 1'b0) begin
-	 //din_out <= '0;
-	 k1_out <= '0;
-	 k2_out <= '0;	
-	 k3_out <= '0;
-	 rot_freq_out <='0;
-	 shift_en_out <='0;
-	 shift_amt_out <= '0;
-	 mode_out <= '0;
 	 en_out <= '0;
 	 is_alpha_upper_case_out <= '0;
 	 is_alpha_low_case_out <= '0;
 	 extended_shift_data_out <= '0;
       end // if (rst == 1'b0)      
       else begin	
-	 k1_out <= k1;
-	 k2_out <= k2;	
-	 k3_out <= k3;
-	 rot_freq_out <= rot_freq;
-	 shift_en_out <= shift_en;
-	 shift_amt_out <= shift_amt;
-	 mode_out <= mode;
 	 en_out <= en;
 	 is_alpha_upper_case_out <= is_alpha_upper_case;
 	 is_alpha_low_case_out <= is_alpha_low_case;

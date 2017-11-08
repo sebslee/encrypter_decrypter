@@ -33,10 +33,6 @@ module encrypt_pipe_shift_scramble (
 				    input logic        is_alpha_upper_case ,
 				    input logic        is_alpha_low_case,
 				    //PIPE OUTPUTS
-				    //output logic [7:0]  din_out,
-				    output logic [7:0] k1_out , k2_out , k3_out,
-				    output logic [2:0] rot_freq_out,	        
-				    output logic       mode_out,
 				    output logic       en_out,
 				    output logic [7:0] data_out);
 
@@ -48,21 +44,10 @@ module encrypt_pipe_shift_scramble (
   // flop data out ...
    always_ff @ (posedge clk, negedge rst) begin : seq_logic
       if(rst == 1'b0) begin
-	 //din_out <= '0;
-	 k1_out <= '0;
-	 k2_out <= '0;	
-	 k3_out <= '0;
-	 rot_freq_out <='0;
-	 mode_out <= '0;
 	 en_out <= '0;
 	 data_out <= '0;
       end // if (rst == 1'b0)      
       else begin	
-	 k1_out <= k1;
-	 k2_out <= k2;	
-	 k3_out <= k3;
-	 rot_freq_out <= rot_freq;
-	 mode_out <= mode;
 	 en_out <= en;
 	 data_out <= scrambled_data;	          
       end // else: !if(rst == 1'b0)
