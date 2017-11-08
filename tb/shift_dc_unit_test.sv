@@ -34,12 +34,19 @@ logic 	  mode_out;
 logic        en_out;
 logic 	  is_alpha_upper_case_out , is_alpha_low_case_out;
 logic [31:0] extended_shift_data_out;
-
+logic [7:0] scramble_to_xor;
+logic [7:0] k1_xor , k2_xor , k3_xor;
+logic [2:0] rot_xor;
+logic mode_xor , en_xor;
 
 encrypt_pipe_shift_dc uut(.*);
 
 encrypt_pipe_shift_scramble scramble_i (.clk(clk) , .rst(rst) , .en(en_out) , .shift_en(shift_en_out) , .shift_amt(shift_amt_out),  .mode(mode_out) ,
-.extended_shift_in(extended_shift_data_out) , .is_alpha_upper_case(is_alpha_upper_case_out) , .is_alpha_low_case(is_alpha_low_case_out) );
+.extended_shift_in(extended_shift_data_out) , .is_alpha_upper_case(is_alpha_upper_case_out) , .is_alpha_low_case(is_alpha_low_case_out)  , .k1 (k1_out) , .k2 (k2_out) , 
+.k3(k3_out) , .rot_freq(rot_freq_out) , .data_out(scramble_to_xor) , .k1_out(k1_xor) , .k2_out(k2_xor) , .k3_out(k3_xor) , .rot_freq_out(rot_xor) , .en_out (en_xor) , .mode_out(mode_xor) );
+
+encrypt_pipe_shift_xor xor_stage (.clk(clk) , .rst(rst) , .en(en_xor) , .mode(mode_xor) , .k1(k1) , .k2(k2) , .k3(k3) , .din(scramble_to_xor) , .rot_freq(rot_freq));
+
 
 initial begin
 clk = 1'b0;
@@ -55,15 +62,18 @@ mode = 1'b1;
 shift_en = 1'b1;
 din = 8'h41;
 en = 1'b1;
-shift_amt = 4'b0100;
-
+shift_amt = 4'b0001;
+rot_freq = '0;
+k1 = 8'h11;
+k2 = 8'hFF;
+k3 = 8'hDE;
 repeat (2) @(posedge clk);
 #5 rst = 1'b1;
 
-repeat (30) @(posedge clk) din = din + 1 ;
-
-@(posedge clk) din = 8'h61;
-repeat (30) @(posedge clk) din = din + 1 ;
+//repeat (30) @(posedge clk) din = din + 1 ;
+repeat(5) @(posedge clk);
+//@(posedge clk) din = 8'h61;
+//repeat (30) @(posedge clk) din = din + 1 ;
 
 # 20 $finish();
 end

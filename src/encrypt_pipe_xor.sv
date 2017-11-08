@@ -28,7 +28,7 @@ module encrypt_pipe_shift_xor(
 
    logic [7:0] 					 encrypted_data_int;
    logic [7:0] 					 curr_key;
-   logic [2:0] 					 cnt , nxt_cnt;
+   logic [2:0] 					 cnt , next_cnt;
    logic [7:0] 					 next_key;
    logic [2:0] 					 curr_key_sel , next_key_sel;
    logic 					 valid_ff;
@@ -40,8 +40,8 @@ module encrypt_pipe_shift_xor(
 
    always_comb begin: combo_logic
       
-      next_key = '0;
-      next_key_sel = '0;
+      next_key = k1;
+      next_key_sel = 3'b001;
       next_cnt = '0;
       valid_ff = 1'b0;   
       encrypted_data_int = '0;
@@ -52,11 +52,11 @@ module encrypt_pipe_shift_xor(
 	 
 	 if(cnt == rot_freq) begin
 	    next_key_sel = {curr_key_sel[1] , curr_key_sel[0] , curr_key_sel[2]};
-            nxt_cnt = '0;   
+            next_cnt = '0;   
 	 end
 	 else begin
 	   next_key_sel = curr_key_sel;
-	   nxt_cnt = cnt + 1;
+	   next_cnt = cnt + 1;
 	 end
 	 
 
