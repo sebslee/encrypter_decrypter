@@ -14,8 +14,10 @@
 ////////////////////////////////////////////////////////////////////
 `ifndef SHIFT_SCRAMBLE_PIPE
  `define SHIFT_SCRAMBLE_PIPE
-
+//`include "../include/"
+`include "../include/encrypt_config.svh"
 import encrypt_config::*;
+
 
 module encrypt_pipe_shift_scramble (
 				    input logic        clk,
@@ -25,7 +27,7 @@ module encrypt_pipe_shift_scramble (
 				    input logic [7:0]  k1 , k2 , k3,
 				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
-				    input logic        shift_amt,
+				    input logic [3:0]  shift_amt,
 				    input logic        mode,
 				    input [31:0]       extended_shift_in,
 				    input logic        is_alpha_upper_case ,
@@ -62,7 +64,7 @@ module encrypt_pipe_shift_scramble (
 	 rot_freq_out <= rot_freq;
 	 mode_out <= mode;
 	 en_out <= en;
-	 data_out <= scramble_data;	          
+	 data_out <= scrambled_data;	          
       end // else: !if(rst == 1'b0)
    end // block: seq_logic 
 
@@ -78,7 +80,7 @@ module encrypt_pipe_shift_scramble (
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
 	    shifted_data = extended_shift_in << shift_amt;
 	    aligned_data[25:6] = shifted_data[25:6];
-	    aligned_data[5:0] = shifted_data[31:26] || shifted_data[5:0];
+	    aligned_data[5:0] = shifted_data[31:26] | shifted_data[5:0];
 	    //decode data back
 	    if(is_alpha_upper_case) begin
 	       case(aligned_data)
@@ -153,14 +155,14 @@ module encrypt_pipe_shift_scramble (
 	 else
 	   data_out_int = extended_shift_in[7:0];
 	 //scramble data
-	 scramble_data [0] = data_out_int[`PERM_0];
-	 scramble_data [1] = data_out_int[`PERM_1];
-	 scramble_data [2] = data_out_int[`PERM_2];	 
-	 scramble_data [3] = data_out_int[`PERM_3];
-	 scramble_data [4] = data_out_int[`PERM_4];
-	 scramble_data [5] = data_out_int[`PERM_5];
-	 scramble_data [6] = data_out_int[`PERM_6];
-	 scramble_data [7] = data_out_int[`PERM_7];	 
+	 scrambled_data [0] = data_out_int[`PERM_0];
+	 scrambled_data [1] = data_out_int[`PERM_1];
+	 scrambled_data [2] = data_out_int[`PERM_2];	 
+	 scrambled_data [3] = data_out_int[`PERM_3];
+	 scrambled_data [4] = data_out_int[`PERM_4];
+	 scrambled_data [5] = data_out_int[`PERM_5];
+	 scrambled_data [6] = data_out_int[`PERM_6];
+	 scrambled_data [7] = data_out_int[`PERM_7];	 
       end // if (en == 1'b1 && mode == 1'b1)
    end // block: comb_logic
 

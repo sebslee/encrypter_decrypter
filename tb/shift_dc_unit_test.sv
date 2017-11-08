@@ -24,12 +24,12 @@ module shift_dc_unit_test();
 			      logic [7:0]   k1 , k2 , k3;
 logic [2:0]   rot_freq;
 logic 	  shift_en;
- logic 	  shift_amt;
+ logic 	 [3:0] shift_amt;
 logic 	  mode;
  logic [7:0]  k1_out , k2_out , k3_out;
  logic [2:0]  rot_freq_out;
 logic 	  shift_en_out;
-logic 	  shift_amt_out;
+logic 	[3:0]  shift_amt_out;
 logic 	  mode_out;
 logic        en_out;
 logic 	  is_alpha_upper_case_out , is_alpha_low_case_out;
@@ -38,6 +38,8 @@ logic [31:0] extended_shift_data_out;
 
 encrypt_pipe_shift_dc uut(.*);
 
+encrypt_pipe_shift_scramble scramble_i (.clk(clk) , .rst(rst) , .en(en_out) , .shift_en(shift_en_out) , .shift_amt(shift_amt_out),  .mode(mode_out) ,
+.extended_shift_in(extended_shift_data_out) , .is_alpha_upper_case(is_alpha_upper_case_out) , .is_alpha_low_case(is_alpha_low_case_out) );
 
 initial begin
 clk = 1'b0;
@@ -53,6 +55,7 @@ mode = 1'b1;
 shift_en = 1'b1;
 din = 8'h41;
 en = 1'b1;
+shift_amt = 4'b0100;
 
 repeat (2) @(posedge clk);
 #5 rst = 1'b1;
