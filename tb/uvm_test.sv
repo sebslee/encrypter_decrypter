@@ -1,3 +1,5 @@
+import uvm_pkg::*;
+`include "uvm_macros.svh"
 class mem_seq_item extends uvm_sequence_item;
   //Control Information
   rand bit [3:0] addr;

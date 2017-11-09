@@ -37,9 +37,9 @@ module decrypt_pipe (
    wire 				en_out_shift;
    wire [7:0] 				data_out_xor;
 
-   decrypt_pipe_xor decrypt_pipe_xor_i ( .clk(clk), .rst(rst) , .en(en_out_shift) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .mode(mode) , .din(din), .encrypted_data (data_out_xor) , .encrypted_valid(xor_data_valid) );
+   decrypt_pipe_xor decrypt_pipe_xor_i ( .clk(clk), .rst(rst) , .en(en) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .mode(mode) , .din(din), .encrypted_data (data_out_xor) , .encrypted_valid(xor_data_valid) );
 
-   decrypt_pipe__dc decrypt_pipe_dc_i ( .clk(clk), .rst(rst) , .en(xor_data_valid) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .shift_en(shift_en)  , .shift_amt(shift_amt) , .mode(mode) ,  .din(data_out_xor)  , .en_out(en_out_dc) , 
+   decrypt_pipe_dc decrypt_pipe_dc_i ( .clk(clk), .rst(rst) , .en(xor_data_valid) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .shift_en(shift_en)  , .shift_amt(shift_amt) , .mode(mode) ,  .din(data_out_xor)  , .en_out(en_out_dc) , 
 						   .is_alpha_upper_case_out(is_alpha_upper_case_out) , .is_alpha_low_case_out(is_alpha_low_case_out) , .extended_shift_data_out(extended_shift_data_out_dc));
 
 

@@ -18,7 +18,9 @@
 
 `ifndef XOR_DECRYPT_PIPE
  `define XOR_DECRYPT_PIPE
-module decrypt_pipe_shift_xor(
+`include "../include/encrypt_config.svh"
+import encrypt_config::*;
+module decrypt_pipe_xor(
 			      input logic 	 clk,
 			      input logic 	 rst,
 			      input logic 	 en,

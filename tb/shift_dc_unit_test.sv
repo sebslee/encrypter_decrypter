@@ -52,7 +52,7 @@ repeat(3) @(posedge clk);
 
 mode = 1'b1;
 shift_en = 1'b1;
-din = 8'h42;
+din = 8'hD3;
 en = 1'b1;
 shift_amt = 4'b0001;
 rot_freq = '0;

@@ -35,7 +35,7 @@ logic mode_xor , en_xor;
 logic v;
 logic [7:0] encyrpted_data;
 
-dcerypt_pipe decrypt_pipe_i (.clk(clk) , .rst(rst) , .k1(k1) ,.k2(k2) ,.k3(k3) , .shift_en(shift_en) , .shift_amt(shift_amt) , .rot_freq(rot_freq) , .din(din) , .mode(mode) , .v(v) , .dout(encrypted_data) , .en(en));
+decrypt_pipe decrypt_pipe_i (.clk(clk) , .rst(rst) , .k1(k1) ,.k2(k2) ,.k3(k3) , .shift_en(shift_en) , .shift_amt(shift_amt) , .rot_freq(rot_freq) , .din(din) , .mode(mode) , .v(v) , .dout(encrypted_data) , .en(en));
 
 
 
@@ -51,7 +51,7 @@ repeat(3) @(posedge clk);
 
 mode = 1'b1;
 shift_en = 1'b1;
-din = 8'h42;
+din = 8'hD3;
 en = 1'b1;
 shift_amt = 4'b0001;
 rot_freq = '0;
