@@ -3,7 +3,7 @@
 //            :
 // File name  : encrypt_decrypt_system_hp_tb.sv
 //            :
-// Description: Test bench for high performance mode of encrypt decrypt system. 
+// Description: Test bench for low performance (configurable) mode of encrypt decrypt system. 
 //            :
 // Limitations: None
 //            : 
@@ -17,14 +17,17 @@
 `include "../src/encrypt_decrypt_system_wrapper.sv"
 
 import encrypt_config::*;
-`define HP_MODE 
-module encrypt_decrypt_system_hp_tb();
+
+module encrypt_decrypt_system_lp_tb();
 
   logic clk, enable , rst , decrypt_valid_out , encrypted_data_valid;
   logic [7:0] data_in_encrypt ,encrypted_data , decrypted_data; 
   event data_trans , scoreboard_check; // signal data transaction to scoreboard...
   int unsigned err_count;
 
+   logic cfg_wen;
+   logic [31:0] cfg_data_in;
+ 
   encrypt_decrypt_system_wrapper uut (.*);
 
    initial begin
@@ -39,22 +42,24 @@ module encrypt_decrypt_system_hp_tb();
       //#1 assert (v == 1'b0) else begin $error ("@ %d Valid asserted while on reset!", $time); err_count++; end 
       #((`CLK_PERIOD/2) * 3) $display ("De-asserting reset"); rst = 1'b1;
 
-      repeat(100) begin
+      $display("Configuring system ..");
+      cfg_data_in [31:24] = 8'hFA;
+      cfg_data_in [23:16] = 8'hAF;
+      cfg_data_in [15:8] = 8'hBA;
+      cfg_data_in [7] = 1'b0;
+      cfg_data_in [6:4] = 3'b001;
+      cfg_data_in [3:1] = 3'b000;
+      cfg_data_in [0] = 1'b1;
+      @(posedge clk);
+      #1;
+      $display("Entering operation mode!");
+      
+      repeat(2) begin
        
       @(posedge clk) #1 data_in_encrypt = $urandom_range(256,0); enable = 1'b1;
       //#1 -> data_trans;
       end
-      enable = 1'b0;
-      $display ("Sending back to back vectors.. ");
-      repeat(5) begin
-      @(posedge clk) #1 data_in_encrypt = $urandom_range(256,0); enable = 1'b1;
-      //#1 -> data_trans;
-      end
-      @(posedge clk) #1 data_in_encrypt = $urandom_range(256,0); enable = 1'b1;
-      $display ("Applying reset in middle of transaction");
-      #8 rst = 1'b0;
-      $display ("Checking defaults");
-      #1 assert ( encrypted_data_valid == 1'b0);
+    
       #150 $finish();
    end
 
@@ -70,7 +75,7 @@ module encrypt_decrypt_system_hp_tb();
    always @(scoreboard_check) begin
      logic[7:0] scoreboard_data_in;
      #0 scoreboard_data_in = data_in_encrypt;
-     repeat(3) @(posedge clk);    
+     repeat(6) @(posedge clk);    
      //wait for 3 clock cycles and check valid signal, data must be the one we sent orignally...
      #2;
      if(decrypt_valid_out == 1'b1)
