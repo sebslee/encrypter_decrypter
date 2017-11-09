@@ -87,6 +87,20 @@ module decrypt_unit (
 
 `else // CODE FOR CONFIGURABLE MODE STARTS HERE
 
+   //Pipe instance
+   decrypt_pipe decrypt_pipe_i (
+				.clk(clk),
+				.rst(rst),
+				.en(en),
+				.k1(k1),
+				.k2(k2),
+				.k3(k3),
+				.rot_freq(rot_freq),
+				.shift_en(shift_en),
+				.shift_amt(shift_amt),
+				.mode(mode),
+				.v(v),
+				.dout(dout));
    
    
 `endif // !`ifdef HP_MODE
