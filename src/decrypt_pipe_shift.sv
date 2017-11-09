@@ -23,7 +23,7 @@ module decrypt_pipe_shift (
 				    input logic [7:0]  k1 , k2 , k3,
 				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
-				    input logic [3:0]  shift_amt,
+				    input logic [2:0]  shift_amt,
 				    input logic        mode,
 				    input [31:0]       extended_shift_in,
 				    input logic        is_alpha_upper_case ,

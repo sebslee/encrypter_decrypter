@@ -63,7 +63,7 @@ module encrypt_decrypt_system_wrapper (
    assign shift_amt = cfg_data_out [3:1];   
    assign mode = cfg_data_out[0];
 	   
-   config_register config_register_i (.clk(clk) , .rst(rst) , .wen(config_reg_wen) , .data_in(cfg_data_in) , .data_out(cfg_data_out));
+   config_register config_register_i (.clk(clk) , .rst(rst) , .wen(cfg_wen) , .data_in(cfg_data_in) , .data_out(cfg_data_out));
  
 `endif
  

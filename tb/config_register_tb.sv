@@ -47,7 +47,7 @@ module config_register_tb();
       $display ("Trying to write on operation mode");
       @(posedge clk) ;
       #1 wen = 1'b1;
-      #1 data_in = 32'hCAFECAFE;
+      #1 data_in = 32'hCAFECAFF;
       @(posedge clk);
       #1 assert (data_out == 32'hCAFECAF1);  
       $display ("Going to config again");

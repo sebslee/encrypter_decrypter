@@ -12,10 +12,11 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
+`include "../include/encrypt_config.svh"
 `ifndef SHIFT_SCRAMBLE_PIPE
  `define SHIFT_SCRAMBLE_PIPE
 //`include "../include/"
-`include "../include/encrypt_config.svh"
+
 import encrypt_config::*;
 
 
@@ -27,7 +28,7 @@ module encrypt_pipe_shift_scramble (
 				    input logic [7:0]  k1 , k2 , k3,
 				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
-				    input logic [3:0]  shift_amt,
+				    input logic [2:0]  shift_amt,
 				    input logic        mode,
 				    input [31:0]       extended_shift_in,
 				    input logic        is_alpha_upper_case ,

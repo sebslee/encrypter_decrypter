@@ -13,7 +13,7 @@
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
 
-`include "../include/encrypt_config.svh"
+//`include "../include/encrypt_config.svh"
 `include "../src/encrypt_decrypt_system_wrapper.sv"
 
 import encrypt_config::*;
@@ -41,26 +41,27 @@ module encrypt_decrypt_system_lp_tb();
       #((`CLK_PERIOD/2) * 3) $display("Asserting reset ..");  rst = 1'b0;
       //#1 assert (v == 1'b0) else begin $error ("@ %d Valid asserted while on reset!", $time); err_count++; end 
       #((`CLK_PERIOD/2) * 3) $display ("De-asserting reset"); rst = 1'b1;
-
+      #1 cfg_wen = 1'b1;
       $display("Configuring system ..");
       cfg_data_in [31:24] = 8'hFA;
       cfg_data_in [23:16] = 8'hAF;
       cfg_data_in [15:8] = 8'hBA;
-      cfg_data_in [7] = 1'b0;
+      cfg_data_in [7] = 1'b1;
       cfg_data_in [6:4] = 3'b001;
-      cfg_data_in [3:1] = 3'b000;
+      cfg_data_in [3:1] = 3'b011;
       cfg_data_in [0] = 1'b1;
       @(posedge clk);
       #1;
       $display("Entering operation mode!");
       
-      repeat(2) begin
+      repeat(20) begin
        
       @(posedge clk) #1 data_in_encrypt = $urandom_range(256,0); enable = 1'b1;
       //#1 -> data_trans;
       end
-    
-      #150 $finish();
+      #1 enable =1'b0;
+      repeat (7) @(posedge clk);
+      #3 $finish();
    end
 
 //Capture data transaction
@@ -73,9 +74,10 @@ module encrypt_decrypt_system_lp_tb();
 
    //Scoreboarding
    always @(scoreboard_check) begin
+    
      logic[7:0] scoreboard_data_in;
      #0 scoreboard_data_in = data_in_encrypt;
-     repeat(6) @(posedge clk);    
+     repeat(5) @(posedge clk);    
      //wait for 3 clock cycles and check valid signal, data must be the one we sent orignally...
      #2;
      if(decrypt_valid_out == 1'b1)
@@ -83,6 +85,7 @@ module encrypt_decrypt_system_lp_tb();
      err_count++;
      $error("@ %d ERROR: Expected data = %h Actual data = %h ", $time(), scoreboard_data_in , decrypted_data);
      end
+     $display ("@ %d Scoreboard check completed!  Expected data = %h Actual data = %h ", $time(), scoreboard_data_in , decrypted_data);
    end
 
    final  begin

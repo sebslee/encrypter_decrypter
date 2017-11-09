@@ -91,6 +91,7 @@ module decrypt_unit (
    decrypt_pipe decrypt_pipe_i (
 				.clk(clk),
 				.rst(rst),
+                                .din(din),
 				.en(en),
 				.k1(k1),
 				.k2(k2),

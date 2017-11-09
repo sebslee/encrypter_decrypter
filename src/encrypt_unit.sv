@@ -89,6 +89,7 @@ module encrypt_unit (
 `endif // !`ifdef HP_MODE
    //Pipe instance
    encrypt_pipe encrypt_pipe_i(	.clk(clk),
+                                .din (din),
 				.rst(rst),
 				.en(en),
 				.k1(k1),
