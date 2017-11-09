@@ -13,7 +13,8 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
-
+`ifndef DECRYPT_PIPE_TOP
+`define DECRYPT_PIPE_TOP
 module decrypt_pipe (
 		     input logic 	clk,
 		     input logic 	rst,
@@ -48,6 +49,6 @@ module decrypt_pipe (
    
    
 endmodule // decrypt_pipe
-
+`endif
    
    

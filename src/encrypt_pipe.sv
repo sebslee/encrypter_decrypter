@@ -13,6 +13,8 @@
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
 
+`ifndef ENCRYPT_PIPE_TOP
+`define ENCRYPT_PIPE_TOP
 
 module encrypt_pipe(
 		    input logic        clk,
@@ -47,4 +49,5 @@ module encrypt_pipe(
    encrypt_pipe_shift_xor encrypt_pipe_shift_xor_i ( .clk(clk), .rst(rst) , .en(en_out_shift) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .mode(mode) , .din(data_out_shift), .encrypted_data (dout) , .encrypted_valid(v));
 
 endmodule
-
+ 
+`endif

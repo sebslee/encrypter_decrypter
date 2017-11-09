@@ -87,7 +87,19 @@ module encrypt_unit (
 `else // !`ifdef HP_MODE // CODE FOR CONFIGURABLE MODE STARTS HERE
      
 `endif // !`ifdef HP_MODE
-   
+   //Pipe instance
+   encrypt_pipe encrypt_pipe_i(	.clk(clk),
+				.rst(rst),
+				.en(en),
+				.k1(k1),
+				.k2(k2),
+				.k3(k3),
+				.rot_freq(rot_freq),
+				.shift_en(shift_en),
+				.shift_amt(shift_amt),
+				.mode(mode),
+				.v(v),
+				.dout(dout));
 
 endmodule// encrypt_unit
 `endif
