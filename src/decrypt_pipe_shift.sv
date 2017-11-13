@@ -56,8 +56,8 @@ module decrypt_pipe_shift (
       if(en == 1'b1 && mode == 1'b1) begin
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
 	    shifted_data = extended_shift_in >> shift_amt;
-	    aligned_data[18:0] = shifted_data[25:6];
-	    aligned_data[25:19] = shifted_data[31:26] | shifted_data[5:0];
+	    aligned_data[19:0] = shifted_data[25:6];
+	    aligned_data[25:20] = shifted_data[31:26] | shifted_data[5:0];
 	    //decode data back
 	    if(is_alpha_upper_case) begin
 	       case(aligned_data)

@@ -12,12 +12,12 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
-`include "../include/encrypt_config.svh"
+//`include "../include/encrypt_config.svh"
 `ifndef SHIFT_SCRAMBLE_PIPE
  `define SHIFT_SCRAMBLE_PIPE
 //`include "../include/"
 
-import encrypt_config::*;
+//import encrypt_config::*;
 
 
 module encrypt_pipe_shift_scramble (
@@ -35,7 +35,7 @@ module encrypt_pipe_shift_scramble (
 				    output logic [7:0] data_out);
 
    logic [7:0] 					       data_out_int;
-   logic [7:0] 					       scrambled_data;
+  // logic [7:0] 					       scrambled_data;
    logic [31:0] 				       shifted_data;
    logic [25:0] 				       aligned_data;
    logic [31:0]                                        extended_shift_int;
@@ -48,7 +48,8 @@ module encrypt_pipe_shift_scramble (
       end // if (rst == 1'b0)      
       else begin	
 	 en_out <= en;
-	 data_out <= scrambled_data;	          
+	// data_out <= scrambled_data;	          
+	data_out <= data_out_int;
       end // else: !if(rst == 1'b0)
    end // block: seq_logic 
 
@@ -56,7 +57,7 @@ module encrypt_pipe_shift_scramble (
    
    always_comb begin : comb_logic
       data_out_int = '0;
-      scrambled_data = '0;     
+     // scrambled_data = '0;     
       aligned_data = '0;
       shifted_data ='0;
       extended_shift_int = '0;
@@ -139,7 +140,8 @@ module encrypt_pipe_shift_scramble (
 	 end // if (shift_en && (is_alpha_upper_case || is_alpha_low_case))
 	 else
 	   data_out_int = extended_shift_in[7:0];
-	 //scramble data
+	 //scramble data sleebarr: This was implemented as configurable external pipe block ..
+	 /*
 	 scrambled_data [0] = data_out_int[`PERM_0];
 	 scrambled_data [1] = data_out_int[`PERM_1];
 	 scrambled_data [2] = data_out_int[`PERM_2];	 
@@ -148,6 +150,7 @@ module encrypt_pipe_shift_scramble (
 	 scrambled_data [5] = data_out_int[`PERM_5];
 	 scrambled_data [6] = data_out_int[`PERM_6];
 	 scrambled_data [7] = data_out_int[`PERM_7];	 
+	 */
       end // if (en == 1'b1 && mode == 1'b1)
    end // block: comb_logic
 

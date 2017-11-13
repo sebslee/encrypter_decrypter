@@ -29,6 +29,7 @@ module decrypt_unit (
 		     input logic 	shift_en,
 		     input logic [2:0] 	shift_amt,
 		     input logic mode,
+		                         input logic [2:0] perm0, perm1 , perm2 , perm3 , perm4 , perm5 , perm6 , perm7,
 `endif
 		     
 		     output logic [7:0] dout,
@@ -102,7 +103,15 @@ module decrypt_unit (
 				.shift_amt(shift_amt),
 				.mode(mode),
 				.v(v),
-				.dout(dout));
+				.dout(dout),
+                                .perm0(perm0),
+				.perm1(perm1),
+				.perm2(perm2),
+				.perm3(perm3),
+				.perm4(perm4),
+				.perm5(perm5),
+				.perm6(perm6),
+				.perm7(perm7));
    
    
 `endif // !`ifdef HP_MODE

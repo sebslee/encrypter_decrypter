@@ -19,6 +19,7 @@
 `include "encrypt_pipe_xor.sv"
 `include "encrypt_pipe_shift_dc.sv"
 `include "encrypt_pipe_shift_scramble.sv"
+`include "encrypt_pipe_permutation.sv"
 
 module encrypt_pipe(
 		    input logic        clk,
@@ -26,6 +27,7 @@ module encrypt_pipe(
 		    input logic        en,
 		    input logic [7:0]  din,
 		    input logic [7:0]  k1 , k2 , k3,
+		    input logic [2:0] perm0, perm1 , perm2 , perm3 , perm4 , perm5 , perm6  , perm7,
 		    input logic [2:0]  rot_freq,
 		    input logic        shift_en,
 		    input logic [2:0]  shift_amt,
@@ -42,6 +44,8 @@ module encrypt_pipe(
    //From SHIFT to XOR
    logic 			       en_out_shift;
    logic [7:0] 			       data_out_shift;
+   logic [7:0] data_out_perm;
+   logic valid_out_perm;
 
    //Pipe instances...
    encrypt_pipe_shift_dc encrypt_pipe_shift_dc_i ( .clk(clk), .rst(rst) , .en(en) , .shift_en(shift_en)   , .mode(mode) ,  .din(din)  , .en_out(en_out_dc) , 
@@ -49,8 +53,12 @@ module encrypt_pipe(
 
    encrypt_pipe_shift_scramble encrypt_pipe_shift_scramble_i ( .clk(clk), .rst(rst) , .en(en_out_dc) , .shift_en(shift_en)  , .shift_amt(shift_amt) , .mode(mode) , .extended_shift_in( extended_shift_data_out_dc) ,  
 							       .is_alpha_upper_case(is_alpha_upper_case_out) , .is_alpha_low_case(is_alpha_low_case_out) , .en_out (en_out_shift) , .data_out(data_out_shift));
+							       
+encrypt_pipe_permutation encrypt_pipe_permutation_i ( .clk(clk) , .rst(rst) , .data_in (data_out_shift) , .en(en_out_shift) , .perm0(perm0), .perm1(perm1), .perm2(perm2) , .perm3(perm3) , .perm4(perm4) , .perm5(perm5) , .perm6(perm6) , .perm7(perm7) , .valid_out( valid_out_perm) , .data_out(data_out_perm) );
 
-   encrypt_pipe_shift_xor encrypt_pipe_shift_xor_i ( .clk(clk), .rst(rst) , .en(en_out_shift) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .mode(mode) , .din(data_out_shift), .encrypted_data (dout) , .encrypted_valid(v));
+
+							       
+   encrypt_pipe_shift_xor encrypt_pipe_shift_xor_i ( .clk(clk), .rst(rst) , .en(valid_out_perm) , .k1(k1) , .k2(k2) , .k3(k3) , .rot_freq(rot_freq), .mode(mode) , .din(data_out_perm), .encrypted_data (dout) , .encrypted_valid(v));
 
 endmodule
  

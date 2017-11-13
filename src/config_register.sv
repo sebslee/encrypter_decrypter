@@ -22,8 +22,8 @@ module config_register(
 		       input logic 	   clk,
 		       input logic 	   rst,
 		       input logic         wen,
-		       input logic [31:0]  data_in,
-		       output logic [31:0] data_out);
+		       input logic [63:0]  data_in,
+		       output logic [63:0] data_out);
 
    always_ff @(posedge clk , negedge rst) begin
       if(rst == 1'b0) begin
