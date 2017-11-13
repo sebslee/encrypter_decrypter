@@ -15,6 +15,7 @@
 `ifndef ENCRYPT_UNIT
 `define ENCRYPT_UNIT
 `include "../include/encrypt_config.svh"
+`include "encrypt_pipe.sv"
 import encrypt_config::*;
 
 module encrypt_unit (
@@ -37,7 +38,7 @@ module encrypt_unit (
    logic                                v_ff;
    logic [7:0] 				din_ff;
    logic [7:0] 				dout_int;   
-   wire [7:0] 				scrambled_in;
+   logic [7:0] 				scrambled_in;
    logic [23:0] 			curr_key;      
    logic [23:0] 			curr_key_rot ;
 
@@ -78,7 +79,8 @@ module encrypt_unit (
   end // block: seq_logic
 
    always_comb begin: xor_stage
-
+           dout_int = scrambled_in ^ curr_key[15:8];
+   end
    
    //Rotate key every clock cycle 8 bits if cycle frequency is set to 1
    always_comb begin : auto_shifter
@@ -86,7 +88,6 @@ module encrypt_unit (
    end
 `else // !`ifdef HP_MODE // CODE FOR CONFIGURABLE MODE STARTS HERE
      
-`endif // !`ifdef HP_MODE
    //Pipe instance
    encrypt_pipe encrypt_pipe_i(	.clk(clk),
                                 .din (din),
@@ -101,6 +102,8 @@ module encrypt_unit (
 				.mode(mode),
 				.v(v),
 				.dout(dout));
+`endif // !`ifdef HP_MODE
+   
 
 endmodule// encrypt_unit
 `endif

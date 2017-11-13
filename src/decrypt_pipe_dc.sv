@@ -19,10 +19,7 @@ module decrypt_pipe_dc (
 			      input logic 	  rst,
 			      input logic 	  en,
 			      input logic [7:0]   din,
-			      input logic [7:0]   k1 , k2 , k3,
-			      input logic [2:0]   rot_freq,
 			      input logic 	  shift_en,
-			      input logic [2:0]	  shift_amt,
 			      input logic 	  mode,
 			      //PIPE OUTPUTS
 			      output logic        en_out,

@@ -37,8 +37,8 @@ module encrypt_decrypt_system_wrapper (
 );
 
 
-  wire encrypt_valid_out;
-  wire [7:0] encrypt_data_out;
+  logic encrypt_valid_out;
+  logic [7:0] encrypt_data_out;
    
 
 
@@ -48,12 +48,12 @@ module encrypt_decrypt_system_wrapper (
 
 `ifndef HP_MODE
    
-   wire [31:0] cfg_data_out;
-   wire [7:0] 	 k1 , k2 , k3;
-   wire [2:0] 	 rot_freq;
-   wire 	 shift_en;
-   wire [2:0] 	 shift_amt;
-   wire 	 mode;
+   logic [31:0] cfg_data_out;
+   logic [7:0] 	 k1 , k2 , k3;
+   logic [2:0] 	 rot_freq;
+   logic 	 shift_en;
+   logic [2:0] 	 shift_amt;
+   logic 	 mode;
    	   
    assign k1 = cfg_data_out[31:24];
    assign k2 = cfg_data_out [23:16];

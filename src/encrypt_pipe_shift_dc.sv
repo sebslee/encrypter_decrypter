@@ -19,17 +19,14 @@ module encrypt_pipe_shift_dc (
 			      input logic 	  rst,
 			      input logic 	  en,
 			      input logic [7:0]   din,
-			      input logic [7:0]   k1 , k2 , k3,
-			      input logic [2:0]   rot_freq,
 			      input logic 	  shift_en,
-			      input logic [2:0]	  shift_amt,
 			      input logic 	  mode,
 			      //PIPE OUTPUTS
 			      output logic        en_out,
 			      output logic 	  is_alpha_upper_case_out , is_alpha_low_case_out,
-			      output logic [31:0] extended_shift_data_out);
+			      output logic [25:0] extended_shift_data_out);
 
-   logic [31:0] extended_shift_data; //for 1 clock cycle rotation
+   logic [25:0] extended_shift_data; //for 1 clock cycle rotation
    logic 	is_alpha_upper_case , is_alpha_low_case;
 
    // flop data out ...
@@ -62,7 +59,7 @@ module encrypt_pipe_shift_dc (
 	 else if (din > 96 && din < 123) begin
 	    is_alpha_low_case = 1'b1;
 	 end
-	 extended_shift_data[31:25] = '0;	 
+	 //extended_shift_data[31:25] = '0;	 
          case (din)
 	   //Upper case ..
 	   65: extended_shift_data[25:0] = 26'b1 << 0;
@@ -122,7 +119,7 @@ module encrypt_pipe_shift_dc (
 	 endcase // case (din)
 	 end // if (shift_en == 1'b1)
          else begin
-	 extended_shift_data [31:8] = '0;
+	 extended_shift_data [25:8] = '0;
 	 extended_shift_data [7:0] = din;	
          end 
       end // if (mode == 1'b1 )

@@ -37,7 +37,7 @@ module decrypt_pipe_xor(
    logic [7:0] 					 next_key;
    logic [2:0] 					 curr_key_sel , next_key_sel;
    logic 					 valid_ff;
-   wire [7:0] 					 scrambled_data_out; // added scrambling in this stage for decryption...
+   logic [7:0] 					 scrambled_data_out; // added scrambling in this stage for decryption...
    
    
    assign  scrambled_data_out[`PERM_0] = encrypted_data_int[0];

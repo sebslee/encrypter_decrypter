@@ -15,6 +15,7 @@
 `ifndef DECRYPT_UNIT
 `define DECRYPT_UNIT
 `include "../include/encrypt_config.svh"
+`include "decrypt_pipe.sv"
 import encrypt_config::*;
 
 module decrypt_unit (

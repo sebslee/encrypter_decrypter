@@ -24,13 +24,10 @@ module encrypt_pipe_shift_scramble (
 				    input logic        clk,
 				    input logic        rst,
 				    input logic        en,
-				    input logic [7:0]  din,
-				    input logic [7:0]  k1 , k2 , k3,
-				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
 				    input logic [2:0]  shift_amt,
 				    input logic        mode,
-				    input [31:0]       extended_shift_in,
+				    input [25:0]       extended_shift_in,
 				    input logic        is_alpha_upper_case ,
 				    input logic        is_alpha_low_case,
 				    //PIPE OUTPUTS
@@ -41,6 +38,7 @@ module encrypt_pipe_shift_scramble (
    logic [7:0] 					       scrambled_data;
    logic [31:0] 				       shifted_data;
    logic [25:0] 				       aligned_data;
+   logic [31:0]                                        extended_shift_int;
    
   // flop data out ...
    always_ff @ (posedge clk, negedge rst) begin : seq_logic
@@ -61,10 +59,11 @@ module encrypt_pipe_shift_scramble (
       scrambled_data = '0;     
       aligned_data = '0;
       shifted_data ='0;
- 
-      if(en == 1'b1 && mode == 1'b1) begin
+      extended_shift_int = '0;
+      if(en == 1'b1 && mode == 1'b1) begin      
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
-	    shifted_data = extended_shift_in << shift_amt;
+            extended_shift_int = {{6{1'b0}}, extended_shift_in};
+	    shifted_data = extended_shift_int << shift_amt;
 	    aligned_data[25:6] = shifted_data[25:6];
 	    aligned_data[5:0] = shifted_data[31:26] | shifted_data[5:0];
 	    //decode data back

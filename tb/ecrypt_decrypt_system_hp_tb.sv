@@ -12,9 +12,9 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
-
+`timescale 1ns/1ps
 `include "../include/encrypt_config.svh"
-`include "../src/encrypt_decrypt_system_wrapper.sv"
+//`include "../src/encrypt_decrypt_system_wrapper.sv"
 
 import encrypt_config::*;
 `define HP_MODE 
