@@ -108,7 +108,7 @@ endcase
 
 
 //Bit 5 MUX
-case(perm3)
+case(perm5)
 3'b000: data_out_int[0] = data_in[5];
 3'b001: data_out_int[1] = data_in[5];
 3'b010: data_out_int[2] = data_in[5];
@@ -122,7 +122,7 @@ endcase
 
 
 //Bit 6 MUX
-case(perm3)
+case(perm6)
 3'b000: data_out_int[0] = data_in[6];
 3'b001: data_out_int[1] = data_in[6];
 3'b010: data_out_int[2] = data_in[6];
@@ -136,7 +136,7 @@ endcase
 
 
 //Bit 7 MUX
-case(perm3)
+case(perm7)
 3'b000: data_out_int[0] = data_in[7];
 3'b001: data_out_int[1] = data_in[7];
 3'b010: data_out_int[2] = data_in[7];

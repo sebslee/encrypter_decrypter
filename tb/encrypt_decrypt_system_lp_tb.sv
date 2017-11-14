@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////
 
 //`include "../include/encrypt_config.svh"
-`include "/home/sl9n17/project/encrypter_decrypter/synth_lp/netlist/encrypt_decrypt_system_wrapper_netlist.v"
+//`include "/home/sl9n17/project/encrypter_decrypter/synth_lp/netlist/encrypt_decrypt_system_wrapper_netlist.v"
 
 `define CLK_PERIOD 10
 `timescale 1ns / 1ps
@@ -28,7 +28,7 @@ module encrypt_decrypt_system_lp_tb();
   int unsigned err_count;
   integer DATA_IN , DATA_OUT , DATA_ENCRYPT;
    logic cfg_wen;
-   logic [31:0] cfg_data_in;
+   logic [63:0] cfg_data_in;
 int cnt_data_sent, cnt_data_received , cnt_data_encrypted;
  
 covergroup config_cg @ (posedge cfg_wen);
@@ -80,10 +80,19 @@ end
       cfg_data_in [31:24] = 8'hFA;
       cfg_data_in [23:16] = 8'hAF;
       cfg_data_in [15:8] = 8'hBA;
-      cfg_data_in [7] = 1'b1;
+      cfg_data_in [7] = 1'b0;
       cfg_data_in [6:4] = 3'b111;
       cfg_data_in [3:1] = 3'b011;
       cfg_data_in [0] = 1'b1;
+      cfg_data_in [34:32]= 7;
+cfg_data_in [37:35] = 6;
+cfg_data_in [40:38] = 5;
+cfg_data_in [43:41] = 4;
+cfg_data_in [46:44] = 3;
+cfg_data_in [49:47] = 2;
+cfg_data_in [52:50] = 1;
+cfg_data_in [55:53] = 0;
+cfg_data_in [63:56] = '0;
       @(posedge clk);
       #1;
       $display("Entering operation mode!");
@@ -94,7 +103,7 @@ end
       //#1 -> data_trans;
       end
       #1 enable =1'b0;
-      repeat (7) @(posedge clk);
+      repeat (1) @(posedge clk);
       $fclose(DATA_IN);
       $fclose(DATA_OUT);
       #3 $stop();
