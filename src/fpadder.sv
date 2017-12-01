@@ -168,9 +168,9 @@ logic [31:0] sum_nxt;
 	
 	a_align_nxt = {1'b1 , a_int [22:0] , 3'b000};
 	b_align_nxt = {1'b1 , b_int [22:0] , 3'b000};
-	//Remove bias here as well...
-	a_exp_nxt = a_int[30:23] - 127;	
-	b_exp_nxt = b_int[30:23] - 127;
+	//Remove bias here as well... , no need to remove bias ...
+	a_exp_nxt = a_int[30:23] ;	
+	b_exp_nxt = b_int[30:23] ;
 	a_sign_nxt = a_int[31];
 	b_sign_nxt = b_int[31];
 	
@@ -183,39 +183,39 @@ logic [31:0] sum_nxt;
     //	0 + anything returns anything.
 	//NaN
 	nxt_state = align; // if nothing happens down there...
-	if((a_exp == 128 && a_align [26:3] != 0 ) || (b_exp == 128 && b_align[26:23] != 0)) begin
+	if((a_exp == '1 && a_align [25:3] != 0 ) || (b_exp == '1 && b_align[25:3] != 0)) begin
 	s_int_nxt = '1;		
 	nxt_state = write_output;
 	end
 	//InF
-	else if(a_exp == 128) begin
+	else if(a_exp == '1) begin
 	s_int_nxt[31] = a_sign;
 	s_int_nxt[30:23] = '1;
 	s_int_nxt[22:0] = '0;
 	nxt_state = write_output;
     end	
-	else if(b_exp == 128) begin
+	else if(b_exp == '1) begin
 	s_int_nxt[31] = b_sign;
 	s_int_nxt[30:23] = '1;
 	s_int_nxt[22:0] = '0;
 	nxt_state = write_output;
     end		
 	// 0 + 0
-	if($signed(a_exp) == -127 && a_align[26:3] == '0 && $signed(b_exp) == -127 && b_align[26:3] == '0) begin
+	if(a_exp == '0 && a_align[25:3] == '0 && b_exp == '0 && b_align[25:3] == '0) begin
 	s_int_nxt = '0; //Just write all 0s ...
 	nxt_state = write_output;
 	end
-	else if	($signed(a_exp) == -127 && a_align[26:3] == '0) begin
+	else if	(a_exp == '0 && a_align[25:3] == '0) begin
 	//Write b...
 	s_int_nxt [31] = b_sign;
-	s_int_nxt [30:23] = b_exp + 127;
+	s_int_nxt [30:23] = b_exp ;
 	s_int_nxt [22:0] = b_align [25:3];
 	nxt_state = write_output;
 	end
-	else if	($signed(b_exp) == -127 && b_align[26:3] == '0) begin
+	else if	(b_exp == '0 && b_align[25:3] == '0) begin
 	//Write a...
 	s_int_nxt [31] = a_sign;
-	s_int_nxt [30:23] = a_exp + 127;
+	s_int_nxt [30:23] = a_exp ;
 	s_int_nxt [22:0] = a_align [25:3];
 	nxt_state = write_output;
 	end	
@@ -225,7 +225,7 @@ logic [31:0] sum_nxt;
 	align : begin
     //Keep shifting until exponents are aligned increasing the exponent of the lesser.
 	// The sticky bit remains as an or of the other two guys...
-	if($signed(a_exp) > $signed(b_exp)) begin
+	if(a_exp > b_exp) begin
 	   b_exp_nxt = b_exp + 1;
 	   b_align_nxt = b_align >> 1; 
 	   b_align_nxt[0] = b_align[0] | b_align[1];
@@ -233,7 +233,7 @@ logic [31:0] sum_nxt;
 	   a_exp_nxt = a_exp;
 	   a_align_nxt = a_align;
     end	
-	else	if($signed(b_exp) > $signed(a_exp)) begin
+	else	if(b_exp > a_exp) begin
 	   a_exp_nxt = a_exp + 1;
 	   a_align_nxt = a_align >> 1; 
 	   a_align_nxt[0] = a_align[0] | a_align[1];
@@ -333,7 +333,7 @@ logic [31:0] sum_nxt;
 
    encode : begin
    s_int_nxt[31] = s_sign;
-   s_int_nxt[30:23] = s_exp + 127;
+   s_int_nxt[30:23] = s_exp ;
    s_int_nxt[22:0] = s_m[22:0];      
    nxt_state = write_output;
    end
