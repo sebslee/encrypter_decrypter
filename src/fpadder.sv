@@ -72,6 +72,10 @@ logic [31:0] sum_nxt;
 	  b_exp <= b_exp_nxt;
 	  end
 	  
+          special_cases : begin
+          s_int <= s_int_nxt;
+          end
+
 	  addition : begin
 	  
 	  sum_int <= sum_int_nxt;
@@ -287,6 +291,7 @@ logic [31:0] sum_nxt;
 	guard_bit_nxt = sum_int[2];
 	round_bit_nxt = sum_int[1];
 	sticky_bit_nxt = sum_int[0];
+        s_exp_nxt = s_exp;
 	end
 	nxt_state = normalize;
 	
