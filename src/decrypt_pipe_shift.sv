@@ -19,6 +19,9 @@ module decrypt_pipe_shift (
 				    input logic        clk,
 				    input logic        rst,
 				    input logic        en,
+				    input logic [7:0]  din,
+				    input logic [7:0]  k1 , k2 , k3,
+				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
 				    input logic [2:0]  shift_amt,
 				    input logic        mode,
@@ -48,7 +51,7 @@ module decrypt_pipe_shift (
       else begin	
 	 en_out <= en_f;
          en_f <= en;
-	 data_out <= data_out_int;
+	 data_out <= data_out_int;	          
             is_alpha_low_case_f	 <=     is_alpha_low_case;
             is_alpha_upper_case_f <= is_alpha_upper_case;
             aligned_data_f <= aligned_data;
@@ -62,7 +65,7 @@ module decrypt_pipe_shift (
     
       aligned_data = 'x;
       shifted_data ='x;
-  
+ 
       if(en == 1'b1 && mode == 1'b1) begin
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
 	    shifted_data = extended_shift_in >> shift_amt;
@@ -75,7 +78,7 @@ module decrypt_pipe_shift (
       data_out_int = '0;
           if(en_f == 1'b1 && mode == 1'b1) begin
 	 if(shift_en && (is_alpha_upper_case_f || is_alpha_low_case_f)) begin
-	    //decode data back //ECO split this thing to improve perfomance...
+	    //decode data back
 	    if(is_alpha_upper_case_f) begin
 	       case(aligned_data_f)
 		 

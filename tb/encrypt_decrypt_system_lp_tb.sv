@@ -37,7 +37,7 @@ bins enabled = {1};
 bins disabled = {1};
 }
 endgroup
-
+ 
   encrypt_decrypt_system_wrapper uut (.*);
 
   
@@ -90,19 +90,19 @@ end
       
       repeat(100) begin
        
-      @(posedge clk) #1 data_in_encrypt = $random(); enable = 1'b1;
+      @(posedge clk) #1 data_in_encrypt = $urandom_range(256,0); enable = 1'b1;
       //#1 -> data_trans;
       end
       #1 enable =1'b0;
       repeat (7) @(posedge clk);
       $fclose(DATA_IN);
       $fclose(DATA_OUT);
-      #3 $stop();
+      #3 $finish();
    end
 
 //Capture data transaction
    always @(posedge clk) begin
-     if(enable == 1'b1 && rst == 1'b1 ) begin
+     if(enable == 1'b1 && rst == 1'b1) begin
      $display ("Data transaction! Data sent %h " , data_in_encrypt );
      $fwrite (DATA_IN , "%d\t%d\t%h\n" ,$time(), cnt_data_sent, data_in_encrypt);
      cnt_data_sent = cnt_data_sent + 1;
@@ -110,24 +110,32 @@ end
      end    
    end
 
-//Capture encrypted data
-
+   //Scoreboarding
+   always @(scoreboard_check) begin
+    
 always @ (posedge clk) begin
 if(enable == 1'b1 && encrypted_data_valid == 1'b1) begin
    $fwrite (DATA_ENCRYPT , "%d\t%d \t\t%h\n" ,$time(), cnt_data_encrypted, encrypted_data);
    cnt_data_encrypted = cnt_data_encrypted +1;
 end
 end
-
-//Capture decrypted data   
+     #0 scoreboard_data_in = data_in_encrypt;
+     repeat(5) @(posedge clk);    
+     //wait for 3 clock cycles and check valid signal, data must be the one we sent orignally...
    always @(posedge clk) begin
    if(decrypt_valid_out == 1'b1) begin
    $fwrite (DATA_OUT , "%d\t%d\t%h\n" ,$time(), cnt_data_received, decrypted_data);
    cnt_data_received = cnt_data_received +1;
 end
-
+     #2;
    end
-   
+     #1 assert (scoreboard_data_in == decrypted_data ) else begin
+     err_count++;
+     $error("@ %d ERROR: Expected data = %h Actual data = %h ", $time(), scoreboard_data_in , decrypted_data);
+     end
+     $display ("@ %d Scoreboard check completed!  Expected data = %h Actual data = %h ", $time(), scoreboard_data_in , decrypted_data);
+   end
+
 
 endmodule
   

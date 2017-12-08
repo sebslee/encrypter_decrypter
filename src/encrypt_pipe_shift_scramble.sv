@@ -24,6 +24,9 @@ module encrypt_pipe_shift_scramble (
 				    input logic        clk,
 				    input logic        rst,
 				    input logic        en,
+				    input logic [7:0]  din,
+				    input logic [7:0]  k1 , k2 , k3,
+				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
 				    input logic [2:0]  shift_amt,
 				    input logic        mode,
@@ -51,7 +54,7 @@ module encrypt_pipe_shift_scramble (
 	 en_out <= '0;
 	 data_out <= '0;
       end // if (rst == 1'b0)      
-      else begin
+      else begin	
          mode_f <= mode;	
 	 en_f <= en;
          en_out <= en_f;
@@ -72,8 +75,8 @@ module encrypt_pipe_shift_scramble (
       aligned_data = 'x;
       shifted_data ='x;
       extended_shift_int = 'x;
-
-      if(en == 1'b1 && mode == 1'b1) begin      
+ 
+      if(en == 1'b1 && mode == 1'b1) begin
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
             extended_shift_int = {{6{1'b0}}, extended_shift_in};
 	    shifted_data = extended_shift_int << shift_amt;
@@ -152,10 +155,18 @@ module encrypt_pipe_shift_scramble (
 		   
 		 
 	       endcase // case (aligned_data)	       
-	    end 	    	    
-         else
+	    end // if (  is_alpha_low_case == 1'b1)	    
+	    else
 	      data_out_int = extended_shift_in_f[7:0];
-	 //end // if (shift_en && (is_alpha_upper_case || is_alpha_low_case))
+	 //scramble data
+	 scrambled_data [0] = data_out_int[`PERM_0];
+	 scrambled_data [1] = data_out_int[`PERM_1];
+	 scrambled_data [2] = data_out_int[`PERM_2];	 
+	 scrambled_data [3] = data_out_int[`PERM_3];
+	 scrambled_data [4] = data_out_int[`PERM_4];
+	 scrambled_data [5] = data_out_int[`PERM_5];
+	 scrambled_data [6] = data_out_int[`PERM_6];
+	 scrambled_data [7] = data_out_int[`PERM_7];	 
       end // if (en == 1'b1 && mode == 1'b1)
    end // block: comb_logic
 

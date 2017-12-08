@@ -18,7 +18,7 @@
 
 package encrypt_config;
 
-//`define HP_MODE
+
 `define PERM_0 0
 `define PERM_1 1
 `define PERM_2 2
