@@ -12,25 +12,22 @@
 // Revision   : Version 1.0 11/17
 // Engineer   : Sebastian Lee (sbslee@gmail.com)
 ////////////////////////////////////////////////////////////////////
-`include "../include/encrypt_config.svh"
+//`include "../include/encrypt_config.svh"
 `ifndef SHIFT_SCRAMBLE_PIPE
  `define SHIFT_SCRAMBLE_PIPE
 //`include "../include/"
 
-import encrypt_config::*;
+//import encrypt_config::*;
 
 
 module encrypt_pipe_shift_scramble (
 				    input logic        clk,
 				    input logic        rst,
 				    input logic        en,
-				    input logic [7:0]  din,
-				    input logic [7:0]  k1 , k2 , k3,
-				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
 				    input logic [2:0]  shift_amt,
 				    input logic        mode,
-				    input [31:0]       extended_shift_in,
+				    input [25:0]       extended_shift_in,
 				    input logic        is_alpha_upper_case ,
 				    input logic        is_alpha_low_case,
 				    //PIPE OUTPUTS
@@ -38,38 +35,59 @@ module encrypt_pipe_shift_scramble (
 				    output logic [7:0] data_out);
 
    logic [7:0] 					       data_out_int;
-   logic [7:0] 					       scrambled_data;
+  // logic [7:0] 					       scrambled_data;
    logic [31:0] 				       shifted_data;
    logic [25:0] 				       aligned_data;
-   
+   logic [25:0] 				       aligned_data_f;
+   logic [31:0]                                        extended_shift_int;
+   logic [25:0]                                        extended_shift_in_f;
+   logic en_f;
+   logic mode_f;
+   logic is_alpha_upper_case_f;
+   logic is_alpha_low_case_f;
   // flop data out ...
    always_ff @ (posedge clk, negedge rst) begin : seq_logic
       if(rst == 1'b0) begin
 	 en_out <= '0;
 	 data_out <= '0;
       end // if (rst == 1'b0)      
-      else begin	
-	 en_out <= en;
-	 data_out <= scrambled_data;	          
+      else begin
+         mode_f <= mode;	
+	 en_f <= en;
+         en_out <= en_f;
+	// data_out <= scrambled_data;	          
+	data_out <= data_out_int;
+        aligned_data_f <= aligned_data;
+        extended_shift_in_f <= extended_shift_in;
+        is_alpha_low_case_f <= is_alpha_low_case;
+        is_alpha_upper_case_f <= is_alpha_upper_case;
       end // else: !if(rst == 1'b0)
    end // block: seq_logic 
 
    
    
    always_comb begin : comb_logic
-      data_out_int = '0;
-      scrambled_data = '0;     
-      aligned_data = '0;
-      shifted_data ='0;
- 
-      if(en == 1'b1 && mode == 1'b1) begin
+      data_out_int = 'x;
+     // scrambled_data = '0;     
+      aligned_data = 'x;
+      shifted_data ='x;
+      extended_shift_int = 'x;
+
+      if(en == 1'b1 && mode == 1'b1) begin      
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
-	    shifted_data = extended_shift_in << shift_amt;
+            extended_shift_int = {{6{1'b0}}, extended_shift_in};
+	    shifted_data = extended_shift_int << shift_amt;
 	    aligned_data[25:6] = shifted_data[25:6];
 	    aligned_data[5:0] = shifted_data[31:26] | shifted_data[5:0];
 	    //decode data back
-	    if(is_alpha_upper_case) begin
-	       case(aligned_data)
+         end 
+         end
+
+
+          //We are splitting this stage ...
+          if(en_f == 1'b1 && mode_f == 1'b1) begin
+	    if(is_alpha_upper_case_f) begin
+	       case(aligned_data_f)
 		 
 		 26'b00000000000000000000000001: data_out_int = 8'd65;
 		 26'b00000000000000000000000010: data_out_int = 8'd66;
@@ -102,8 +120,8 @@ module encrypt_pipe_shift_scramble (
 	       endcase // case (aligned_data)
 	       
 	    end	  
-	    else if(  is_alpha_low_case == 1'b1) begin
-	       case(aligned_data)
+	    else if(  is_alpha_low_case_f == 1'b1) begin
+	       case(aligned_data_f)
 		 
 		 26'b00000000000000000000000001: data_out_int = 8'd97;
 		 26'b00000000000000000000000010: data_out_int = 8'd98;
@@ -134,21 +152,10 @@ module encrypt_pipe_shift_scramble (
 		   
 		 
 	       endcase // case (aligned_data)	       
-	    end // if (  is_alpha_low_case == 1'b1)	    
-	    else
-	      data_out_int = extended_shift_in[7:0];
-	 end // if (shift_en && (is_alpha_upper_case || is_alpha_low_case))
-	 else
-	   data_out_int = extended_shift_in[7:0];
-	 //scramble data
-	 scrambled_data [0] = data_out_int[`PERM_0];
-	 scrambled_data [1] = data_out_int[`PERM_1];
-	 scrambled_data [2] = data_out_int[`PERM_2];	 
-	 scrambled_data [3] = data_out_int[`PERM_3];
-	 scrambled_data [4] = data_out_int[`PERM_4];
-	 scrambled_data [5] = data_out_int[`PERM_5];
-	 scrambled_data [6] = data_out_int[`PERM_6];
-	 scrambled_data [7] = data_out_int[`PERM_7];	 
+	    end 	    	    
+         else
+	      data_out_int = extended_shift_in_f[7:0];
+	 //end // if (shift_en && (is_alpha_upper_case || is_alpha_low_case))
       end // if (en == 1'b1 && mode == 1'b1)
    end // block: comb_logic
 

@@ -6,7 +6,7 @@
 // Description: Symetric to encryption, enable hooked to valid of encryption unit
 // Scrambling happens here, so we can reuse encrypt pipe dc and shift
 // completely from encryption unit.
-// Returns the xored scrambled value (key rotation also happens here)
+// 
 //            :
 // Limitations: None
 //            : 
@@ -18,8 +18,8 @@
 
 `ifndef XOR_DECRYPT_PIPE
  `define XOR_DECRYPT_PIPE
-`include "../include/encrypt_config.svh"
-import encrypt_config::*;
+//`include "../include/encrypt_config.svh"
+//import encrypt_config::*;
 module decrypt_pipe_xor(
 			      input logic 	 clk,
 			      input logic 	 rst,
@@ -37,10 +37,10 @@ module decrypt_pipe_xor(
    logic [7:0] 					 next_key;
    logic [2:0] 					 curr_key_sel , next_key_sel;
    logic 					 valid_ff;
-   wire [7:0] 					 scrambled_data_out; // added scrambling in this stage for decryption...
+   //logic [7:0] 					 scrambled_data_out; // added scrambling in this stage for decryption...
    
    
-   assign  scrambled_data_out[`PERM_0] = encrypted_data_int[0];
+  /* assign  scrambled_data_out[`PERM_0] = encrypted_data_int[0];
    assign  scrambled_data_out[`PERM_1] = encrypted_data_int[1];
    assign  scrambled_data_out[`PERM_2] = encrypted_data_int[2];
    assign  scrambled_data_out[`PERM_3] = encrypted_data_int[3];
@@ -48,7 +48,7 @@ module decrypt_pipe_xor(
    assign  scrambled_data_out[`PERM_5] = encrypted_data_int[5];
    assign  scrambled_data_out[`PERM_6] = encrypted_data_int[6];
    assign  scrambled_data_out[`PERM_7] = encrypted_data_int[7];   
-   
+   */
    
 
    always_comb begin: combo_logic
@@ -96,7 +96,7 @@ module decrypt_pipe_xor(
 	 cnt <= next_cnt;
 	 curr_key_sel <= next_key_sel;
 	 encrypted_valid <= valid_ff;
-	 encrypted_data <= scrambled_data_out;
+	 encrypted_data <= encrypted_data_int;
       end // else: !if(rst == 1'b0)
    end // block: seq_logic
    

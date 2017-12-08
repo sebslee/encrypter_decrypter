@@ -19,10 +19,7 @@ module decrypt_pipe_dc (
 			      input logic 	  rst,
 			      input logic 	  en,
 			      input logic [7:0]   din,
-			      input logic [7:0]   k1 , k2 , k3,
-			      input logic [2:0]   rot_freq,
 			      input logic 	  shift_en,
-			      input logic [2:0]	  shift_amt,
 			      input logic 	  mode,
 			      //PIPE OUTPUTS
 			      output logic        en_out,
@@ -118,7 +115,7 @@ module decrypt_pipe_dc (
            120: extended_shift_data[31:6] = 26'b1 << 23;
            121: extended_shift_data[31:6] = 26'b1 << 24;
            122: extended_shift_data[31:6] = 26'b1 << 25;	   
-	   default :  extended_shift_data [25:0] = { {12{1'b0}} , din};  
+	   default :  extended_shift_data [25:0] = { {18{1'b0}} , din};  
 	 endcase // case (din)
 	 end // if (shift_en == 1'b1)
          else begin

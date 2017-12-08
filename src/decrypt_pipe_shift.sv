@@ -19,9 +19,6 @@ module decrypt_pipe_shift (
 				    input logic        clk,
 				    input logic        rst,
 				    input logic        en,
-				    input logic [7:0]  din,
-				    input logic [7:0]  k1 , k2 , k3,
-				    input logic [2:0]  rot_freq,
 				    input logic        shift_en,
 				    input logic [2:0]  shift_amt,
 				    input logic        mode,
@@ -35,7 +32,12 @@ module decrypt_pipe_shift (
    logic [7:0] 					       data_out_int;
 
    logic [31:0] 				       shifted_data;
-   logic [25:0] 				       aligned_data;
+   logic [25:0] 				       aligned_data , aligned_data_f;
+   logic is_alpha_upper_case_f;
+   logic is_alpha_low_case_f;
+   logic en_f;
+   logic [31:0]       extended_shift_in_f;
+   
    
   // flop data out ...
    always_ff @ (posedge clk, negedge rst) begin : seq_logic
@@ -44,26 +46,38 @@ module decrypt_pipe_shift (
 	 data_out <= '0;
       end // if (rst == 1'b0)      
       else begin	
-	 en_out <= en;
-	 data_out <= data_out_int;	          
+	 en_out <= en_f;
+         en_f <= en;
+	 data_out <= data_out_int;
+            is_alpha_low_case_f	 <=     is_alpha_low_case;
+            is_alpha_upper_case_f <= is_alpha_upper_case;
+            aligned_data_f <= aligned_data;
+            extended_shift_in_f <= extended_shift_in;
       end // else: !if(rst == 1'b0)
    end // block: seq_logic 
 
    
    
    always_comb begin : comb_logic
-      data_out_int = '0;    
-      aligned_data = '0;
-      shifted_data ='0;
- 
+    
+      aligned_data = 'x;
+      shifted_data ='x;
+  
       if(en == 1'b1 && mode == 1'b1) begin
 	 if(shift_en && (is_alpha_upper_case || is_alpha_low_case)) begin
 	    shifted_data = extended_shift_in >> shift_amt;
-	    aligned_data[18:0] = shifted_data[25:6];
-	    aligned_data[25:19] = shifted_data[31:26] | shifted_data[5:0];
-	    //decode data back
-	    if(is_alpha_upper_case) begin
-	       case(aligned_data)
+	    aligned_data[19:0] = shifted_data[25:6];
+	    aligned_data[25:20] = shifted_data[31:26] | shifted_data[5:0];
+          end
+         end
+     end
+     always_comb begin
+      data_out_int = '0;
+          if(en_f == 1'b1 && mode == 1'b1) begin
+	 if(shift_en && (is_alpha_upper_case_f || is_alpha_low_case_f)) begin
+	    //decode data back //ECO split this thing to improve perfomance...
+	    if(is_alpha_upper_case_f) begin
+	       case(aligned_data_f)
 		 
 		 26'b00000000000000000000000001: data_out_int = 8'd65;
 		 26'b00000000000000000000000010: data_out_int = 8'd66;
@@ -96,8 +110,8 @@ module decrypt_pipe_shift (
 	       endcase // case (aligned_data)
 	       
 	    end	  
-	    else if(  is_alpha_low_case == 1'b1) begin
-	       case(aligned_data)
+	    else if(  is_alpha_low_case_f == 1'b1) begin
+	       case(aligned_data_f)
 		 
 		 26'b00000000000000000000000001: data_out_int = 8'd97;
 		 26'b00000000000000000000000010: data_out_int = 8'd98;
@@ -130,10 +144,10 @@ module decrypt_pipe_shift (
 	       endcase // case (aligned_data)	       
 	    end // if (  is_alpha_low_case == 1'b1)	    
 	    else
-	      data_out_int = extended_shift_in[7:0];
+	      data_out_int = extended_shift_in_f[7:0];
 	 end // if (shift_en && (is_alpha_upper_case || is_alpha_low_case))
 	 else
-	   data_out_int = extended_shift_in[7:0];
+	   data_out_int = extended_shift_in_f[7:0];
 	 
       end // if (en == 1'b1 && mode == 1'b1)
    end // block: comb_logic

@@ -15,6 +15,7 @@
 
 `ifndef XOR_PIPE
  `define XOR_PIPE
+ 
 module encrypt_pipe_shift_xor(
 			      input logic 	 clk,
 			      input logic 	 rst,

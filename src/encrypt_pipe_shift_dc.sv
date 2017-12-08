@@ -19,17 +19,14 @@ module encrypt_pipe_shift_dc (
 			      input logic 	  rst,
 			      input logic 	  en,
 			      input logic [7:0]   din,
-			      input logic [7:0]   k1 , k2 , k3,
-			      input logic [2:0]   rot_freq,
 			      input logic 	  shift_en,
-			      input logic [2:0]	  shift_amt,
 			      input logic 	  mode,
 			      //PIPE OUTPUTS
 			      output logic        en_out,
 			      output logic 	  is_alpha_upper_case_out , is_alpha_low_case_out,
-			      output logic [31:0] extended_shift_data_out);
+			      output logic [25:0] extended_shift_data_out);
 
-   logic [31:0] extended_shift_data; //for 1 clock cycle rotation
+   logic [25:0] extended_shift_data; //for 1 clock cycle rotation
    logic 	is_alpha_upper_case , is_alpha_low_case;
 
    // flop data out ...
@@ -52,17 +49,17 @@ module encrypt_pipe_shift_dc (
       //defaults to avoid latches ..
       is_alpha_upper_case = 1'b0;
       is_alpha_low_case = 1'b0;
-      extended_shift_data = '0;      
+      extended_shift_data = 'x;      
       if(mode == 1'b1 && en == 1'b1 ) begin
 	 if(shift_en == 1'b1) begin
 	 //Compare incoming data with boundaries of ascii alphabetic characters ...
-	 if(din > 64 && din < 91)begin
+	 if(din > 8'd64 && din < 8'd91)begin
 	    is_alpha_upper_case = 1'b1;	    
 	 end
-	 else if (din > 96 && din < 123) begin
+	 else if (din > 8'd96 && din < 8'd123) begin
 	    is_alpha_low_case = 1'b1;
 	 end
-	 extended_shift_data[31:25] = '0;	 
+	 //extended_shift_data[31:25] = '0;	 
          case (din)
 	   //Upper case ..
 	   65: extended_shift_data[25:0] = 26'b1 << 0;
@@ -118,11 +115,11 @@ module encrypt_pipe_shift_dc (
            120: extended_shift_data[25:0] = 26'b1 << 23;
            121: extended_shift_data[25:0] = 26'b1 << 24;
            122: extended_shift_data[25:0] = 26'b1 << 25;	   
-	   default :  extended_shift_data [25:0] = { {12{1'b0}} , din};  
+	   default :  extended_shift_data [25:0] = { {18{1'b0}} , din};  
 	 endcase // case (din)
 	 end // if (shift_en == 1'b1)
          else begin
-	 extended_shift_data [31:8] = '0;
+	 extended_shift_data [25:8] = '0;
 	 extended_shift_data [7:0] = din;	
          end 
       end // if (mode == 1'b1 )
